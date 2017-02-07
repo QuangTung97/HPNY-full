@@ -1,0 +1,42 @@
+precision highp float;
+
+varying highp vec3 vColor;
+varying mediump vec2 vTexCoord;
+varying highp vec4 vShadowPos;
+
+uniform sampler2D tex;
+uniform sampler2D shadow;
+
+uniform vec3 lightAmbient;
+
+float RG_to_depth(vec2 RG) {
+	return RG.r + RG.g / 255.0;
+}
+
+float texture_to_depth(in vec2 xyPos) {
+	xyPos.x = (xyPos.x + 1.0) / 2.0;
+	xyPos.y = (xyPos.y + 1.0) / 2.0;
+	
+	if (xyPos.x < 0.0 || xyPos.x > 1.0)
+		return 1.0;
+	if (xyPos.y < 0.0 || xyPos.y > 1.0) 
+		return 1.0;
+	
+	vec4 color = texture2D(shadow, xyPos);
+	return 1.0 - RG_to_depth(color.rg);
+}
+
+void main() {
+	vec4 pos = vShadowPos / vShadowPos.w;
+	float d1 = pos.z;
+	float d2 = texture_to_depth(pos.xy);
+	
+	vec4 color;
+	color = vec4(lightAmbient, 1.0);
+	
+	if (d1 <= d2 + 0.005)
+		color += vec4(vColor, 0.0);
+		
+	color = color * texture2D(tex, vec2(vTexCoord.x, 1.0 - vTexCoord.y));
+	gl_FragColor = color;
+}

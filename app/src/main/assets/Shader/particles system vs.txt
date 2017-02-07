@@ -1,0 +1,55 @@
+precision highp float;
+
+attribute vec3 a_spos;
+attribute vec3 a_v;
+attribute vec2 a_time;
+attribute vec3 a_scolor;
+attribute vec3 a_ecolor;
+attribute vec2 a_texCoord;
+
+uniform mat4 view;
+uniform mat4 projection;
+uniform mat4 MMatrix;
+uniform vec3 a;
+uniform vec3 utime;
+
+varying highp vec2 vTexCoord;
+varying highp vec3 vColor;
+varying highp float vI;
+
+void main() {
+	vec4 pos;
+	float time = utime.x;
+	
+	if (time < a_time.x || time > a_time.y) {
+		pos = vec4(1000.0, 0.0, 0.0, 1.0);
+		vColor = vec3(0.0, 0.0, 0.0);
+	}
+	else {
+		vec3 d;
+		mat4 mv = view * MMatrix;
+		float dtime = time - a_time.x;
+		d = a_v * dtime + a * dtime * dtime / 2.0;
+	
+		d = mat3(mv) * d;
+		
+		mv[0] = vec4(1.0, 0.0, 0.0, 0.0);
+		mv[1] = vec4(0.0, 1.0, 0.0, 0.0);
+		mv[2] = vec4(0.0, 0.0, 1.0, 0.0);
+		
+		float t = dtime / (a_time.y - a_time.x);
+		float i = -1.6 * t * t + 0.6 * t + 1.0;
+		i = clamp(i, 0.0, 2.0);
+		vI = i;
+		
+		pos = vec4(a_spos, 1.0);
+		pos = mv * pos;
+		pos += vec4(d, 0.0);
+		pos = projection * pos;
+		
+		vColor = mix(a_scolor, a_ecolor, dtime / (a_time.y - a_time.x));
+	}
+	
+	vTexCoord = a_texCoord;
+	gl_Position = pos;
+}

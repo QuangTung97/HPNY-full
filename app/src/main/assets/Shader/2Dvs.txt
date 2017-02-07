@@ -1,0 +1,16 @@
+attribute vec2 position;
+attribute vec2 texCoord;
+
+uniform mat4 orthoMatrix;
+uniform mat4 modelMatrix;
+
+varying highp vec2 vTexCoord;
+
+void main() {
+	vec4 pos = vec4(position, 0, 1);
+	pos = modelMatrix * pos;
+	pos = orthoMatrix * pos;
+	
+	vTexCoord = texCoord;
+	gl_Position = pos;
+}

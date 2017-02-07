@@ -1,0 +1,23 @@
+precision highp float;
+
+varying vec4 v_position;
+
+void depth_to_RG(in float depth, out float red, out float green) {
+	depth *= 255.0;
+	red = floor(depth); //(int)(depth * 255)
+	green = depth - red;
+	red /= 255.0;
+}
+
+void main() {
+	float depth;
+	vec4 position = v_position;
+	position /= v_position.w;
+	
+	depth = (1.0 - position.z);
+	
+	float red, green;
+	depth_to_RG(depth, red, green);
+	
+	gl_FragColor = vec4(red, green, 0.0, 1.0);
+}

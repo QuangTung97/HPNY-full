@@ -1,0 +1,15 @@
+attribute vec3 a_position;
+
+uniform mat4 VPMatrix;
+uniform mat4 MMatrix;
+
+varying highp vec4 v_position;
+
+void main() {
+	vec4 position = vec4(a_position, 1.0);
+	position = MMatrix * position;
+	position = VPMatrix * position;
+	
+	v_position = position;
+	gl_Position = position;
+}

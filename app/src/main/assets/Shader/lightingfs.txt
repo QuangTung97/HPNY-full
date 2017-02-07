@@ -1,0 +1,10 @@
+varying highp vec3 color;
+varying mediump vec2 vTexCoord;
+
+uniform sampler2D tex;
+
+void main() {
+	highp vec4 col = vec4(color, 1.0) * texture2D(tex, vec2(vTexCoord.x, 1.0 - vTexCoord.y));
+
+	gl_FragColor = col;
+}

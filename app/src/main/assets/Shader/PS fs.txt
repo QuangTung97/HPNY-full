@@ -1,0 +1,10 @@
+varying highp vec2 vTexCoord;
+varying highp float vI;
+
+uniform sampler2D tex;
+
+void main() {
+	highp vec4 color = texture2D(tex, vTexCoord);
+	color.a *= vI;
+	gl_FragColor = color;
+}
